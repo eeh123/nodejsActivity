@@ -46,6 +46,6 @@ app.use("/ngrecords", ngrecordsRouter);
 
 app.use(errorHandlerMiddleware);
 
-app.listen(4001, async () => {
-  console.log(`⚡️[server]: Server is running at http://localhost:4001`);
+app.listen(port, async () => {
+  console.log(`⚡️[server]: Server is running at http://localhost:${port}`);
 });
