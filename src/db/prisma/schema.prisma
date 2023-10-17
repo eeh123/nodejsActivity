@@ -1,0 +1,49 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Lines {
+  id                    Int        @id @default(autoincrement())
+  name                  String
+  status                Int
+  date_created          DateTime   @default(now())
+  date_modified         DateTime   @default(now())
+  stations Stations[]
+}
+
+model Stations {
+  id          Int           @id   @default(autoincrement())
+  name        String
+  alias       String
+  is_last     Int
+  status      Int
+  line        Lines         @relation(fields: [line_id], references: [id], onDelete: Cascade)   
+  line_id     Int
+  checklists  Checklists[]
+}
+
+model Checklists {
+  id           Int          @id   @default(autoincrement())
+  name         String
+  status       Int
+  station      Stations     @relation(fields: [station_id], references: [id], onDelete: Cascade)   
+  station_id   Int
+  ngrecords    Ngrecords[]
+}
+
+model Ngrecords {
+  id             Int          @id   @default(autoincrement())
+  name           String
+  is_priority    Int
+  status         Int
+  checklist      Checklists   @relation(fields: [checklist_id], references: [id], onDelete: Cascade)   
+  checklist_id   Int
+}
