@@ -23,7 +23,7 @@ ngrecordsRouter.get("/:id", handleGetNgrecordById);
 ngrecordsRouter.patch("/:id", handleUpdateNgrecord);
 
 // Soft Delete ngrecord by id
-ngrecordsRouter.patch("/:id", handleSoftDeleteNgrecord);
+ngrecordsRouter.patch("/softdelete/:id", handleSoftDeleteNgrecord);
 
 // Delete ngrecord by id
 ngrecordsRouter.delete("/:id", handleDeleteNgrecord);

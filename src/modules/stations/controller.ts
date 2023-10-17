@@ -5,6 +5,7 @@ import {
   handleGetStationById,
   handleGetStationList,
   handleUpdateStation,
+  handleSoftDeleteStation,
 } from "./service";
 
 const stationsRouter = Router();
@@ -20,6 +21,9 @@ stationsRouter.get("/:id", handleGetStationById);
 
 // Update station by id
 stationsRouter.patch("/:id", handleUpdateStation);
+
+// Soft Delete station by id
+stationsRouter.patch("/softdelete/:id", handleSoftDeleteStation);
 
 // Delete station by id
 stationsRouter.delete("/:id", handleDeleteStation);

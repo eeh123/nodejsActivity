@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { BasicStationSelect, createStationSchema, updateStationSchema } from "./model";
+import { BasicStationSelect, createStationSchema, updateStationSchema, softDeleteStationSchema } from "./model";
 
 // Create a station
 export async function handleCreateStation(req: Request, res: Response) {
@@ -39,6 +39,22 @@ export async function handleGetStationById(req: Request, res: Response) {
 export async function handleUpdateStation(req: Request, res: Response) {
   const stationId = req.params.id;
   const payload = updateStationSchema.parse(req.body);
+
+  const result = await req.prisma.stations.update({
+    data: payload,
+    where: {
+      id: parseInt(stationId),
+    },
+    select: BasicStationSelect,
+  });
+
+  return res.status(200).json(result);
+}
+
+// Soft Delete station by id
+export async function handleSoftDeleteStation(req: Request, res: Response) {
+  const stationId = req.params.id;
+  const payload = softDeleteStationSchema;
 
   const result = await req.prisma.stations.update({
     data: payload,

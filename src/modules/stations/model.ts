@@ -31,6 +31,12 @@ export const updateStationSchema = z.object({
 
 export type UpdateStationSchema = z.infer<typeof updateStationSchema>;
 
+export const softDeleteStationSchema = ({
+  status: 0,
+});
+
+export type SoftDeleteStationSchema = typeof softDeleteStationSchema;
+
 export const BasicStationSelect: Prisma.StationsSelect = {
   id: true,
   name: true,
