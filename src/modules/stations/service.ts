@@ -51,11 +51,39 @@ export async function handleUpdateStation(req: Request, res: Response) {
   return res.status(200).json(result);
 }
 
-// Soft Delete station by id
+// [Cascading] Soft Delete station by id --NOT WORKING!!!
 export async function handleSoftDeleteStation(req: Request, res: Response) {
   const stationId = req.params.id;
+  const stationChklsts = await req.prisma.checklists.findMany({
+    where: {
+      station_id: parseInt(stationId)
+    },
+    select:{
+      id: true
+    }
+  });
+  const getCids = () => {
+    const cidArr: Array<number> = [];
+    stationChklsts.forEach(checklist => {
+      cidArr.push(checklist.id);
+      return cidArr;
+    })
+    return cidArr;
+  }
+  const cids = getCids();
+  const chklstNgrecords = await req.prisma.ngrecords.findMany({
+    where: {
+      checklist_id: {
+        in: cids
+      }
+    },
+    select: {
+      id: true
+    }
+  })
   const payload = softDeleteStationSchema;
 
+  // Soft deletes station
   const result = await req.prisma.stations.update({
     data: payload,
     where: {
@@ -64,8 +92,35 @@ export async function handleSoftDeleteStation(req: Request, res: Response) {
     select: BasicStationSelect,
   });
 
+
+  //==================NOT WORKING==================
+  // Soft deletes checklists of the station
+  stationChklsts.forEach(checklist => {
+    req.prisma.checklists.update({
+      data: payload,
+      where: {
+        id: checklist.id
+      },
+      select: {
+        id: true
+      }
+    });
+  });
+
+  //==================NOT WORKING==================
+  // Soft deletes ngrecords of the checklists of the station
+  chklstNgrecords.forEach(ngrecords => {
+    req.prisma.ngrecords.update({
+      data: payload,
+      where: {
+        id: ngrecords.id
+      },
+    });
+  });
+
   return res.status(200).json(result);
 }
+
 
 // Delete station by id
 export async function handleDeleteStation(req: Request, res: Response) {
