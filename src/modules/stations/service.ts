@@ -54,6 +54,19 @@ export async function handleUpdateStation(req: Request, res: Response) {
 // [Cascading] Soft Delete station by id --NOT WORKING!!!
 export async function handleSoftDeleteStation(req: Request, res: Response) {
   const stationId = req.params.id;
+  const payload = softDeleteStationSchema;
+
+  // Soft deletes station [Working]
+  const result = await req.prisma.stations.update({
+    data: payload,
+    where: {
+      id: parseInt(stationId),
+    },
+    select: BasicStationSelect,
+  });
+
+
+  //get checklist ids w/ stationIds equal to the station to be soft deleted
   const stationChklsts = await req.prisma.checklists.findMany({
     where: {
       station_id: parseInt(stationId)
@@ -62,6 +75,8 @@ export async function handleSoftDeleteStation(req: Request, res: Response) {
       id: true
     }
   });
+
+  //get ngrecord ids w/ checklistIds equal to the checklist affected by the soft deleted station
   const getCids = () => {
     const cidArr: Array<number> = [];
     stationChklsts.forEach(checklist => {
@@ -81,16 +96,7 @@ export async function handleSoftDeleteStation(req: Request, res: Response) {
       id: true
     }
   })
-  const payload = softDeleteStationSchema;
-
-  // Soft deletes station
-  const result = await req.prisma.stations.update({
-    data: payload,
-    where: {
-      id: parseInt(stationId),
-    },
-    select: BasicStationSelect,
-  });
+  
 
 
   //==================NOT WORKING==================
